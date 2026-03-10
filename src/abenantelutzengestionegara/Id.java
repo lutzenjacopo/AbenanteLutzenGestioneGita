@@ -4,9 +4,9 @@ import java.util.*;
 
 /**
  * Gestisce gli ID del sistema usando:
- * - HashSet<Integer>                    → insieme unico delle matricole studenti
- * - HashSet<Integer>                    → insieme unico degli id gite
- * - HashMap<Integer, HashSet<Integer>>  → mappa matricola → set delle gite a cui è iscritto
+ * - HashSet<Integer>                     insieme unico delle matricole studenti
+ * - HashSet<Integer>                     insieme unico degli id gite
+ * - HashMap<Integer, HashSet<Integer>>   mappa matricola → set delle gite a cui è iscritto
  */
 public class Id {
 
