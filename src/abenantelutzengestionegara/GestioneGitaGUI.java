@@ -162,7 +162,41 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_RimuoviGitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RimuoviGitaActionPerformed
-        // 1. Ottieni la riga selezionata nella tabella
+       // 1. Controlla che ci sia effettivamente qualcosa di selezionato nella tendina
+    if (jComboBox1.getSelectedItem() != null) {
+        
+        // 2. Recupera l'elemento selezionato (es. "1 - Roma")
+        String gitaSelezionata = jComboBox1.getSelectedItem().toString();
+        
+        try {
+            // 3. Estrai l'ID (prende tutto ciò che c'è prima del trattino)
+            String[] parti = gitaSelezionata.split("-");
+            int idGita = Integer.parseInt(parti[0].trim());
+            
+            // 5. Rimuovi fisicamente dal file .pdm
+            boolean rimossoDalFile = gG.rimuoviGita(idGita);
+            
+            if (rimossoDalFile) {
+                // 6. Rimuovi l'elemento dall'interfaccia grafica (dalla tendina)
+                jComboBox1.removeItem(jComboBox1.getSelectedItem());
+                javax.swing.JOptionPane.showMessageDialog(this, "Gita rimossa con successo!");
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Errore: Gita non trovata nel file o impossibile rimuoverla.");
+            }
+            
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Errore nel formato dell'ID gita. Impossibile capire quale eliminare.");
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Errore imprevisto: " + e.getMessage());
+        }
+        
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Nessuna gita selezionata. Apri il menu a tendina e scegline una.");
+    }
+    }//GEN-LAST:event_btn_RimuoviGitaActionPerformed
+
+    private void btn_RimuoviStudenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RimuoviStudenteActionPerformed
+         // 1. Ottieni la riga selezionata nella tabella
     int rigaSelezionata = JtblStudenti.getSelectedRow();
 
     if (rigaSelezionata != -1) {
@@ -204,11 +238,6 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
     } else {
         javax.swing.JOptionPane.showMessageDialog(this, "Seleziona uno studente dalla tabella per rimuoverlo.");
     }
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_RimuoviGitaActionPerformed
-
-    private void btn_RimuoviStudenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RimuoviStudenteActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_btn_RimuoviStudenteActionPerformed
 
     private void btn_AggiungiGitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AggiungiGitaActionPerformed

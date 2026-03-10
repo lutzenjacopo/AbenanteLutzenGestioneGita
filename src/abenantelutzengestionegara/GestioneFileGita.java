@@ -110,4 +110,60 @@ public class GestioneFileGita {
             return false;
         }
     }
+    /**
+     * Metodo per rimuovere una gita dal file
+     * @param idDaRimuovere l'id della gita che l'utente vuole eliminare
+     * @return true se è stata eliminata, false altrimenti
+     */
+    public boolean rimuoviGita(int idDaRimuovere) {
+        java.io.File fileOriginale = new java.io.File("elencoGite.pdm");
+        java.io.File fileTemp = new java.io.File("tempGite.pdm");
+
+        boolean trovato = false;
+
+        try (RandomAccessFile raf = new RandomAccessFile(fileOriginale, "rw");
+             RandomAccessFile tempRaf = new RandomAccessFile(fileTemp, "rw")) {
+
+            long nRecord = raf.length() / DIM_RECORD;
+
+            // Ciclo tutti i record
+            for (int i = 0; i < nRecord; i++) {
+                // Leggo il record corrente
+                raf.seek((long) i * DIM_RECORD);
+                int currentId = raf.readInt();
+                String localita = c.leggiStringaDalFile(raf);
+                int durata = raf.readInt();
+
+                // Se l'ID NON è quello da rimuovere, lo ricopio nel file temporaneo
+                if (currentId != idDaRimuovere) {
+                    tempRaf.writeInt(currentId);
+                    tempRaf.writeChars(c.aggiustaLunghezzaStringa(localita));
+                    tempRaf.writeInt(durata);
+                } else {
+                    // Se lo trovo, non lo copio e segno che l'ho trovato
+                    trovato = true;
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("Errore durante l'eliminazione: " + e.getMessage());
+            return false;
+        }
+
+        // Dopo aver chiuso i file (il blocco try-with-resources li chiude in automatico), sostituisco i file
+        if (trovato) {
+            if (fileOriginale.delete()) {
+                fileTemp.renameTo(fileOriginale);
+                System.out.println("Gita " + idDaRimuovere + " rimossa con successo dal file.");
+                return true;
+            } else {
+                System.out.println("Impossibile eliminare il file originale.");
+            }
+        } else {
+            fileTemp.delete(); // Se non l'ho trovato, butto via il file temporaneo inutile
+            System.out.println("Gita con ID " + idDaRimuovere + " non trovata.");
+        }
+        
+        return false;
+    }
 }
