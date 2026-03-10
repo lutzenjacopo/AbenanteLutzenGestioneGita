@@ -17,6 +17,7 @@ public class AggiungiGitaGUI extends javax.swing.JFrame {
      */
     public AggiungiGitaGUI() {
         initComponents();
+        Controlli c = new Controlli();
     }
 
     /**
@@ -101,10 +102,11 @@ public class AggiungiGitaGUI extends javax.swing.JFrame {
         jPanel1.add(jPanel2);
         jPanel2.setBounds(0, 100, 470, 220);
 
+        btnAggiungi.setBackground(new java.awt.Color(236, 119, 16));
         btnAggiungi.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         btnAggiungi.setText("Aggiungi");
         jPanel1.add(btnAggiungi);
-        btnAggiungi.setBounds(180, 350, 100, 40);
+        btnAggiungi.setBounds(160, 340, 120, 70);
 
         jLabel4.setFont(new java.awt.Font("MV Boli", 1, 24)); // NOI18N
         jLabel4.setText("Crea una Gita");

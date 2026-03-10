@@ -16,6 +16,10 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
      */
     public GestioneGitaGUI() {
         initComponents();
+        GestioneFile gF = new GestioneFile();
+        GestioneFileGita gG = new GestioneFileGita();
+        GestioneFileStudenti gS = new GestioneFileStudenti();
+        
     }
 
     /**
@@ -166,11 +170,13 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_RimuoviStudenteActionPerformed
 
     private void btn_AggiungiGitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AggiungiGitaActionPerformed
-        // TODO add your handling code here:
+       AggiungiGitaGUI g = new AggiungiGitaGUI();
+       g.setVisible(true);
     }//GEN-LAST:event_btn_AggiungiGitaActionPerformed
 
     private void btn_AggiungiStudenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AggiungiStudenteActionPerformed
-        // TODO add your handling code here:
+       AggiungiStudenteGUI s = new AggiungiStudenteGUI();
+       s.setVisible(true);
     }//GEN-LAST:event_btn_AggiungiStudenteActionPerformed
 
     /**

@@ -17,6 +17,7 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
      */
     public AggiungiStudenteGUI() {
         initComponents();
+        Controlli c = new Controlli();
     }
 
     /**
@@ -46,19 +47,23 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 0));
         jPanel1.setLayout(null);
 
-        btnAggiungi.setBackground(new java.awt.Color(51, 255, 51));
+        btnAggiungi.setBackground(new java.awt.Color(102, 255, 102));
         btnAggiungi.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         btnAggiungi.setText("Aggiungi");
+        btnAggiungi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAggiungiActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnAggiungi);
         btnAggiungi.setBounds(130, 350, 120, 50);
 
         lblTitolo.setFont(new java.awt.Font("MV Boli", 0, 24)); // NOI18N
-        lblTitolo.setForeground(new java.awt.Color(51, 255, 51));
-        lblTitolo.setText("Crea un Studente");
+        lblTitolo.setText("Crea uno Studente");
         jPanel1.add(lblTitolo);
         lblTitolo.setBounds(90, 10, 220, 40);
 
-        jPanel2.setBackground(new java.awt.Color(51, 255, 51));
+        jPanel2.setBackground(new java.awt.Color(102, 255, 102));
         jPanel2.setLayout(null);
 
         lblNome.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
@@ -141,6 +146,10 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
     private void txtAnnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAnnoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtAnnoActionPerformed
+
+    private void btnAggiungiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAggiungiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAggiungiActionPerformed
 
     /**
      * @param args the command line arguments
