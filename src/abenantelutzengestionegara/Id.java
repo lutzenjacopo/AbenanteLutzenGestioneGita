@@ -1,7 +1,6 @@
 package abenantelutzengestionegara;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Gestisce gli ID del sistema usando:
@@ -17,8 +16,7 @@ public class Id {
     // Insieme di tutti gli id gite presenti nel sistema
     private HashSet<Integer> idGite = new HashSet<>();
 
-    // Mappa: matricola → set degli id gite a cui lo studente è iscritto
-    // Es: 1001 → {3, 5, 7}
+    // Contiene la matricola con tutte le loro gite a cui fanno parte
     private HashMap<Integer, HashSet<Integer>> iscrizioniPerStudente = new HashMap<>();
 
 
@@ -53,8 +51,6 @@ public class Id {
     }
 
 
-    // ── GITE ──────────────────────────────────────────────────
-
     /**
      * Aggiunge un id gita al sistema.
      */
@@ -76,9 +72,6 @@ public class Id {
     public HashSet<Integer> getIdGite() {
         return idGite;
     }
-
-
-    // ── ISCRIZIONI (matricola → gite) ─────────────────────────
 
     /**
      * Associa uno studente a una gita nella mappa.
