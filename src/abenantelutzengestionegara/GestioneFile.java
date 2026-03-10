@@ -9,5 +9,6 @@ package abenantelutzengestionegara;
  * @author lutzen.jacopo
  */
 public class GestioneFile {
+    private int idS=0,idG=0;
     
 }
