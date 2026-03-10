@@ -10,15 +10,15 @@ package abenantelutzengestionegara;
  * @author samue
  */
 public class GestioneGitaGUI extends javax.swing.JFrame {
+    private GestioneFile gF = new GestioneFile();
+    private    GestioneFileGita gG = new GestioneFileGita();
+    private   GestioneFileStudenti gS = new GestioneFileStudenti();
 
     /**
      * Creates new form GestioneGitaGUI
      */
     public GestioneGitaGUI() {
         initComponents();
-        GestioneFile gF = new GestioneFile();
-        GestioneFileGita gG = new GestioneFileGita();
-        GestioneFileStudenti gS = new GestioneFileStudenti();
         
     }
 
@@ -162,6 +162,48 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_RimuoviGitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RimuoviGitaActionPerformed
+        // 1. Ottieni la riga selezionata nella tabella
+    int rigaSelezionata = JtblStudenti.getSelectedRow();
+
+    if (rigaSelezionata != -1) {
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) JtblStudenti.getModel();
+
+        try {
+            // 2. Recupera la Matricola dalla tabella
+            int matricola = Integer.parseInt(model.getValueAt(rigaSelezionata, 0).toString());
+
+            // 3. Recupera l'ID della Gita dalla JComboBox
+            // (Assicurati di aver selezionato qualcosa nella tendina)
+            if (jComboBox1.getSelectedItem() == null) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Seleziona prima una gita dal menu a tendina.");
+                return; // Ferma l'esecuzione se non c'è una gita selezionata
+            }
+            
+            String selezioneCombo = jComboBox1.getSelectedItem().toString();
+            // Adatta questa riga in base a come è scritta la tua combobox (Scenario 1 o 2)
+            String[] parti = selezioneCombo.split("-"); 
+            int idGita = Integer.parseInt(parti[0].trim());
+
+            // 4. Usa GestioneFile per rimuovere l'iscrizione
+            boolean rimossoDaFile = gF.rimuoviIscrizione(matricola, idGita);
+
+            if (rimossoDaFile) {
+                // 5. Rimuovi dalla tabella grafica
+                model.removeRow(rigaSelezionata);
+                javax.swing.JOptionPane.showMessageDialog(this, "Studente rimosso dalla gita con successo.");
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Impossibile rimuovere lo studente dal file delle iscrizioni.");
+            }
+
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Errore: ID gita o matricola non validi.");
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Si è verificato un errore: " + e.getMessage());
+        }
+
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Seleziona uno studente dalla tabella per rimuoverlo.");
+    }
         // TODO add your handling code here:
     }//GEN-LAST:event_btn_RimuoviGitaActionPerformed
 
