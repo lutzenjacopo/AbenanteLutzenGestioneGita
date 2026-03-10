@@ -13,12 +13,12 @@ import java.io.RandomAccessFile;
  */
 public class GestioneFileGita {
 
-    private final int id = 4;
-    private final int localita = 40;
-    private final int durata = 4;
+    private final int id = 4; // numero di byte 
+    private final int localita = 40; // numero di byte 
+    private final int durata = 4; // numero di byte 
     private Controlli c = new Controlli();
 
-    private static final int DIM_RECORD = 88;
+    private static final int DIM_RECORD = 48; // 40 + 4 + 4 = 48
 
     /**
      * creazione e/o verfica del file
@@ -42,19 +42,27 @@ public class GestioneFileGita {
         }
     }
 
+   
+    /**
+     * metodo per scrivere sul file
+     * @param id  id della gita
+     * @param localita localita della gita
+     * @param durata durata della gita
+     * @return 
+     */
     public boolean inserisciGita(int id, String localita, int durata) {
         try (RandomAccessFile file = new RandomAccessFile("elencoGite.pdm", "rw")) {
 
-            // 1. Sposto il cursore alla fine del file (Append)
+            //  Sposta il cursore alla fine del file (Append) per non scrivere tutto su una linea
             file.seek(file.length());
 
-            // 2. Scrivo la Matricola (writeInt occupa 4 byte)
+            // Scrive la Matricola (writeInt occupa 4 byte)
             file.writeInt(id);
 
-            // 3. Scrivo il Nome (deve essere di 20 caratteri per occupare 40 byte)
+            // Scrive il Nome (deve essere di 20 caratteri per occupare 40 byte)
             file.writeChars(c.aggiustaLunghezzaStringa(localita));
 
-            // 5. Scrivo l'Anno (writeInt occupa 4 byte)
+            // Scrive l'Anno (writeInt occupa 4 byte)
             file.writeInt(durata);
 
             System.out.println("Gita " + id + " " + localita + " salvato con successo!");
@@ -68,24 +76,23 @@ public class GestioneFileGita {
 
     public boolean leggiGita(int posizione) {
 
-        // Modalità "r" (solo lettura) va benissimo qui
+        // Modalità "r" (solo lettura) 
         try (RandomAccessFile file = new RandomAccessFile("elencoGite.pdm", "r")) {
 
-            // 1. Calcolo dove deve posizionarsi il cursore.
-            // Se cerco il 1° record (posizione 1): (1 - 1) * 88 = byte 0
-            // Se cerco il 2° record (posizione 2): (2 - 1) * 88 = byte 88
+            // Calcolo dove deve posizionarsi il cursore.
+            // Se cerca il 2° record (posizione 2): (2 - 1) * 48 = byte 48
             long posizioneByte = (long) (posizione - 1) * DIM_RECORD;
 
-            // Controllo che la posizione richiesta non sia oltre la fine del file
+            // Controlla che la posizione richiesta non sia oltre la fine del file
             if (posizioneByte >= file.length()) {
                 System.out.println("Nessun record trovato in questa posizione.");
                 return false;
             }
 
-            // 2. Sposto il cursore all'inizio del record scelto
+            // Sposta il cursore all'inizio del record scelto
             file.seek(posizioneByte);
 
-            // 3. Leggo i dati ESATTAMENTE nello stesso ordine in cui li ho scritti
+            // Legge i dati esattamente nello stesso ordine in cui li ha scritti
             int id = file.readInt();
             String localita = c.leggiStringaDalFile(file);
             int durata = file.readInt();

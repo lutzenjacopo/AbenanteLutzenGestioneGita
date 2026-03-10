@@ -29,6 +29,9 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        btnAggiungi = new javax.swing.JButton();
+        lblTitolo = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         lblNome = new javax.swing.JLabel();
         lblCognome = new javax.swing.JLabel();
         lblMatricola = new javax.swing.JLabel();
@@ -36,72 +39,92 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
         txtNome = new javax.swing.JTextField();
         txtCognome = new javax.swing.JTextField();
         txtMatricola = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtAnno = new javax.swing.JTextPane();
-        btnAggiungi = new javax.swing.JButton();
+        txtAnno = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(0, 204, 0));
         jPanel1.setLayout(null);
 
-        lblNome.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
+        btnAggiungi.setBackground(new java.awt.Color(51, 255, 51));
+        btnAggiungi.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
+        btnAggiungi.setText("Aggiungi");
+        jPanel1.add(btnAggiungi);
+        btnAggiungi.setBounds(130, 350, 120, 50);
+
+        lblTitolo.setFont(new java.awt.Font("MV Boli", 0, 24)); // NOI18N
+        lblTitolo.setForeground(new java.awt.Color(51, 255, 51));
+        lblTitolo.setText("Crea un Studente");
+        jPanel1.add(lblTitolo);
+        lblTitolo.setBounds(90, 10, 220, 40);
+
+        jPanel2.setBackground(new java.awt.Color(51, 255, 51));
+        jPanel2.setLayout(null);
+
+        lblNome.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         lblNome.setText("Nome");
-        jPanel1.add(lblNome);
-        lblNome.setBounds(20, 40, 40, 23);
+        jPanel2.add(lblNome);
+        lblNome.setBounds(50, 20, 60, 30);
 
-        lblCognome.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
+        lblCognome.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         lblCognome.setText("Cognome");
-        jPanel1.add(lblCognome);
-        lblCognome.setBounds(10, 100, 70, 23);
+        jPanel2.add(lblCognome);
+        lblCognome.setBounds(40, 80, 90, 30);
 
-        lblMatricola.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
+        lblMatricola.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         lblMatricola.setText("Matricola");
-        jPanel1.add(lblMatricola);
-        lblMatricola.setBounds(10, 170, 70, 23);
+        jPanel2.add(lblMatricola);
+        lblMatricola.setBounds(40, 140, 90, 30);
 
-        lblAnno.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
+        lblAnno.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         lblAnno.setText("Anno");
-        jPanel1.add(lblAnno);
-        lblAnno.setBounds(20, 230, 40, 23);
+        jPanel2.add(lblAnno);
+        lblAnno.setBounds(50, 200, 60, 20);
 
         txtNome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNomeActionPerformed(evt);
             }
         });
-        jPanel1.add(txtNome);
-        txtNome.setBounds(140, 40, 140, 22);
-        jPanel1.add(txtCognome);
-        txtCognome.setBounds(140, 100, 140, 22);
+        jPanel2.add(txtNome);
+        txtNome.setBounds(210, 20, 140, 22);
+        jPanel2.add(txtCognome);
+        txtCognome.setBounds(210, 80, 140, 22);
 
         txtMatricola.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtMatricolaActionPerformed(evt);
             }
         });
-        jPanel1.add(txtMatricola);
-        txtMatricola.setBounds(140, 170, 140, 22);
+        jPanel2.add(txtMatricola);
+        txtMatricola.setBounds(210, 140, 140, 22);
 
-        jScrollPane1.setViewportView(txtAnno);
+        txtAnno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAnnoActionPerformed(evt);
+            }
+        });
+        jPanel2.add(txtAnno);
+        txtAnno.setBounds(209, 200, 140, 22);
 
-        jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(140, 230, 140, 22);
-
-        btnAggiungi.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
-        btnAggiungi.setText("Aggiungi");
-        jPanel1.add(btnAggiungi);
-        btnAggiungi.setBounds(100, 290, 100, 30);
+        jPanel1.add(jPanel2);
+        jPanel2.setBounds(0, 80, 400, 250);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -114,6 +137,10 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
     private void txtMatricolaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMatricolaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMatricolaActionPerformed
+
+    private void txtAnnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAnnoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAnnoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -143,12 +170,13 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAggiungi;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblAnno;
     private javax.swing.JLabel lblCognome;
     private javax.swing.JLabel lblMatricola;
     private javax.swing.JLabel lblNome;
-    private javax.swing.JTextPane txtAnno;
+    private javax.swing.JLabel lblTitolo;
+    private javax.swing.JTextField txtAnno;
     private javax.swing.JTextField txtCognome;
     private javax.swing.JTextField txtMatricola;
     private javax.swing.JTextField txtNome;

@@ -12,7 +12,11 @@ import java.io.*;
  */
 public class Controlli {
     
-    
+    /**
+     * inseriesce gli * per lo spazio che rimane dai 20 char 
+     * @param s stringa da controllare
+     * @return la stringa modificata 
+     */
     public String aggiustaLunghezzaStringa(String s) {
         String aggiustata=s;
         if (s.length() < 20) {
@@ -28,7 +32,7 @@ public class Controlli {
     }
     
     /**
-     * controlla se una variabile String è un int
+     * controlla se una variabile String è un intero
      *
      * @param n parametro da controllare
      * @return
@@ -77,6 +81,13 @@ public class Controlli {
         }
         return false;
     }
+    
+    /**
+     * gli passi il file e legge la stringa leva gli *  e lo spazio
+     * @param file
+     * @return
+     * @throws IOException 
+     */
     public String leggiStringaDalFile(RandomAccessFile file) throws IOException {
         StringBuilder sb = new StringBuilder();
         
