@@ -15,6 +15,7 @@ public class AbenanteLutzenGestioneGara {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        GestioneFileStudenti gfs = new GestioneFileStudenti();
     }
     
 }

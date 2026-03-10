@@ -17,7 +17,7 @@ public class GestioneFileStudenti {
     private static final int DIM_RECORD =88;
     public boolean creaFileStudente(){
         try {
-            RandomAccessFile file = new RandomAccessFile("elenco.dat", "r");
+            RandomAccessFile file = new RandomAccessFile("elencoStudenti.pdm", "r");
             //calcolo la dimensione del file per capire quanti record ci sono. 
              int nRecord = (int) (file.length() / DIM_RECORD);
 
