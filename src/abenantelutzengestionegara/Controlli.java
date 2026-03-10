@@ -4,6 +4,8 @@
  */
 package abenantelutzengestionegara;
 
+import java.io.*;
+
 /**
  *
  * @author lutzen.jacopo
@@ -74,5 +76,20 @@ public class Controlli {
             return true;
         }
         return false;
+    }
+    public String leggiStringaDalFile(RandomAccessFile file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        
+        // 1. Legge esattamente 'lunghezza' caratteri dal file
+        for (int i = 0; i < 20; i++) {
+            sb.append(file.readChar());
+        }
+        
+        // 2. Converte in Stringa
+        String letta = sb.toString();
+        
+        // 3. Rimuove tutti gli asterischi che avevamo aggiunto in fase di scrittura
+        // Usiamo replace("*", "") per sostituire gli asterischi con "niente"
+        return letta.replace("*", "").trim(); 
     }
 }
