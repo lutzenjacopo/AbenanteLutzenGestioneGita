@@ -60,7 +60,7 @@ private LogicaGita l;
         lblIdGita = new javax.swing.JLabel();
         cbxGita = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 204, 0));
         jPanel1.setLayout(null);
@@ -110,9 +110,9 @@ private LogicaGita l;
             }
         });
         jPanel2.add(txtNome);
-        txtNome.setBounds(250, 20, 140, 22);
+        txtNome.setBounds(250, 20, 140, 26);
         jPanel2.add(txtCognome);
-        txtCognome.setBounds(250, 80, 140, 22);
+        txtCognome.setBounds(250, 80, 140, 26);
 
         txtMatricola.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,7 +120,7 @@ private LogicaGita l;
             }
         });
         jPanel2.add(txtMatricola);
-        txtMatricola.setBounds(250, 140, 140, 22);
+        txtMatricola.setBounds(250, 140, 140, 26);
 
         txtAnno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -128,7 +128,7 @@ private LogicaGita l;
             }
         });
         jPanel2.add(txtAnno);
-        txtAnno.setBounds(250, 200, 140, 22);
+        txtAnno.setBounds(250, 200, 140, 26);
 
         lblIdGita.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         lblIdGita.setText("Id Gita");
@@ -137,7 +137,7 @@ private LogicaGita l;
 
         cbxGita.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jPanel2.add(cbxGita);
-        cbxGita.setBounds(250, 260, 140, 22);
+        cbxGita.setBounds(250, 260, 140, 26);
 
         jPanel1.add(jPanel2);
         jPanel2.setBounds(0, 80, 440, 310);

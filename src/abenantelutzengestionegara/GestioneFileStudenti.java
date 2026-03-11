@@ -1,110 +1,151 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package abenantelutzengestionegara;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 
 /**
- *
- * @author lutzen.jacopo
+ * Gestisce lettura e scrittura del file binario "elencoStudenti.pdm".
+ * Record: [int matricola (4)] [String nome (40)] [String cognome (40)] [int anno (4)] = 88 byte
  */
 public class GestioneFileStudenti {
 
-    private final int dimMatricola = 4; // byte occupati da un int
-    private final int dimNome = 40;     // byte occupati da 20 caratteri (2 byte ciascuno)
-    private final int dimCognome = 40;  // byte occupati da 20 caratteri (2 byte ciascuno)
-    private final int dimAnno = 4;      // byte occupati da un int
+    private static final String FILE_STUDENTI = "elencoStudenti.pdm";
+    private final int dimMatricola = 4;
+    private final int dimNome = 40;
+    private final int dimCognome = 40;
+    private final int dimAnno = 4;
+    private static final int DIM_RECORD = 88;
     private Controlli c = new Controlli();
 
-    private static final int DIM_RECORD = 88;
-
     /**
-     * creazione e/o verfica del file
-     *
-     * @return gestioni errori
+     * Crea/apre il file studenti.
      */
     public boolean creaFileStudente() {
-        try (RandomAccessFile file = new RandomAccessFile("elencoStudenti.pdm", "rw")) {
-
-            // Calcola la dimensione del file per capire quanti record ci sono
+        try (RandomAccessFile file = new RandomAccessFile(FILE_STUDENTI, "rw")) {
             int nRecord = (int) (file.length() / DIM_RECORD);
-            System.out.println("File creato/aperto con successo.");
+            System.out.println("File studenti creato/aperto con successo.");
             System.out.println("Record attualmente presenti: " + nRecord);
-
             return true;
-
         } catch (IOException e) {
-        //in caso di errore manda messaggio
-            System.out.println("Problema in creazione/lettura file: " + e.getMessage());
+            System.out.println("Problema in creazione/lettura file studenti: " + e.getMessage());
             return false;
         }
     }
 
+    /**
+     * Inserisce un nuovo studente in fondo al file.
+     */
     public boolean inserisciStudente(int matricola, String nome, String cognome, int anno) {
-        try (RandomAccessFile file = new RandomAccessFile("elencoStudenti.pdm", "rw")) {
-
-            //Sposta il cursore alla fine del file (Append) per non scrivere tutto su una linea
+        try (RandomAccessFile file = new RandomAccessFile(FILE_STUDENTI, "rw")) {
             file.seek(file.length());
-
-            // Scrive la Matricola (writeInt occupa 4 byte)
             file.writeInt(matricola);
-
-            // Scrive il Nome (deve essere di 20 caratteri per occupare 40 byte)
             file.writeChars(c.aggiustaLunghezzaStringa(nome));
-
-            // Scrive il Cognome (deve essere di 20 caratteri per occupare 40 byte)
             file.writeChars(c.aggiustaLunghezzaStringa(cognome));
-
-            // Scrive l'Anno (writeInt occupa 4 byte)
             file.writeInt(anno);
-
             System.out.println("Studente " + nome + " " + cognome + " salvato con successo!");
             return true;
-
         } catch (IOException e) {
             System.out.println("Errore durante la scrittura: " + e.getMessage());
             return false;
         }
     }
 
+    /**
+     * Legge e stampa uno studente in base alla posizione (1-based).
+     */
     public boolean leggiStudente(int posizione) {
-        try (RandomAccessFile file = new RandomAccessFile("elencoStudenti.pdm", "r")) {
-
-            // Calcola dove deve posizionarsi il cursore.
-            // Se cerco il 2° record (posizione 2): (2 - 1) * 88 = byte 88
+        try (RandomAccessFile file = new RandomAccessFile(FILE_STUDENTI, "r")) {
             long posizioneByte = (long) (posizione - 1) * DIM_RECORD;
-
-            // Controlla che la posizione richiesta non sia oltre la fine del file
             if (posizioneByte >= file.length()) {
                 System.out.println("Nessun record trovato in questa posizione.");
                 return false;
             }
-
-            // Sposta il cursore all'inizio del record scelto
             file.seek(posizioneByte);
-
-            //Legge i dati esattamente nello stesso ordine in cui li ho scritti
             int matricola = file.readInt();
             String nome = c.leggiStringaDalFile(file);
             String cognome = c.leggiStringaDalFile(file);
             int anno = file.readInt();
-
-            // Stampa il risultato 
-            System.out.println("--- Studente Trovato ---");
-            System.out.println("Matricola: " + matricola);
-            System.out.println("Nome: " + nome);
-            System.out.println("Cognome: " + cognome);
-            System.out.println("Anno: " + anno);
-
+            System.out.println("--- Studente trovato ---");
+            System.out.println("Matricola: " + matricola + " | Nome: " + nome + " | Cognome: " + cognome + " | Anno: " + anno);
             return true;
-
         } catch (IOException e) {
             System.out.println("Errore in lettura: " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Carica tutti gli studenti dal file e li restituisce come ArrayList.
+     * Centralizza la lettura: LogicaGita usa questo metodo invece di rileggere da zero.
+     */
+    public ArrayList<Studente> caricaTuttiGliStudenti() {
+        ArrayList<Studente> lista = new ArrayList<>();
+        java.io.File file = new java.io.File(FILE_STUDENTI);
+        if (!file.exists()) return lista;
+
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            long nRecord = raf.length() / DIM_RECORD;
+            for (int i = 0; i < nRecord; i++) {
+                raf.seek((long) i * DIM_RECORD);
+                int matricola = raf.readInt();
+                String nome = c.leggiStringaDalFile(raf);
+                String cognome = c.leggiStringaDalFile(raf);
+                int anno = raf.readInt();
+                lista.add(new Studente(nome, cognome, matricola, anno));
+            }
+        } catch (IOException e) {
+            System.out.println("Errore lettura studenti: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    /**
+     * Rimuove uno studente dal file tramite file temporaneo.
+     * NUOVO: metodo mancante nella versione precedente.
+     */
+    public boolean rimuoviStudente(int matricolaDaRimuovere) {
+        java.io.File fileOriginale = new java.io.File(FILE_STUDENTI);
+        java.io.File fileTemp = new java.io.File("tempStudenti.pdm");
+        boolean trovato = false;
+
+        try (RandomAccessFile raf = new RandomAccessFile(fileOriginale, "rw");
+             RandomAccessFile tempRaf = new RandomAccessFile(fileTemp, "rw")) {
+
+            long nRecord = raf.length() / DIM_RECORD;
+            for (int i = 0; i < nRecord; i++) {
+                raf.seek((long) i * DIM_RECORD);
+                int mat = raf.readInt();
+                String nome = c.leggiStringaDalFile(raf);
+                String cognome = c.leggiStringaDalFile(raf);
+                int anno = raf.readInt();
+
+                if (mat != matricolaDaRimuovere) {
+                    tempRaf.writeInt(mat);
+                    tempRaf.writeChars(c.aggiustaLunghezzaStringa(nome));
+                    tempRaf.writeChars(c.aggiustaLunghezzaStringa(cognome));
+                    tempRaf.writeInt(anno);
+                } else {
+                    trovato = true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Errore durante l'eliminazione: " + e.getMessage());
+            return false;
+        }
+
+        if (trovato) {
+            if (fileOriginale.delete()) {
+                fileTemp.renameTo(fileOriginale);
+                System.out.println("Studente " + matricolaDaRimuovere + " rimosso con successo.");
+                return true;
+            } else {
+                System.out.println("Impossibile eliminare il file originale.");
+            }
+        } else {
+            fileTemp.delete();
+            System.out.println("Studente con matricola " + matricolaDaRimuovere + " non trovato.");
+        }
+        return false;
     }
 }

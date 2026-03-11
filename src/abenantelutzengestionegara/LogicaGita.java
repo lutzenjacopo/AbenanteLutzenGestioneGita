@@ -1,18 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package abenantelutzengestionegara;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+
 /**
- *
- * @author lucia
  * Classe che gestisce TUTTA la logica dell'applicazione.
  * Le GUI chiamano solo i metodi di questa classe.
  * Nessun riferimento a componenti grafici qui dentro.
+ *
  */
 public class LogicaGita {
 
@@ -20,11 +15,6 @@ public class LogicaGita {
     private GestioneFileStudenti gestioneStudenti = new GestioneFileStudenti();
     private GestioneFile gestioneIscrizioni = new GestioneFile();
     private Controlli controlli = new Controlli();
-
-    private static final String FILE_GITE = "elencoGite.pdm";
-    private static final String FILE_STUDENTI = "elencoStudenti.pdm";
-    private static final int DIM_RECORD_GITA = 48;
-    private static final int DIM_RECORD_STUDENTE = 88;
 
     // ── INIZIALIZZAZIONE ─────────────────────────────────────
 
@@ -60,56 +50,59 @@ public class LogicaGita {
         int id = Integer.parseInt(idStr);
         int durata = Integer.parseInt(durataStr);
 
-        // Controlla se l'ID esiste già
-        ArrayList<Gita> gite = caricaTutteLeGite();
-        for (Gita g : gite) {
+        // Controlla duplicato ID usando l'HashSet in memoria invece di rileggere il file
+        if (gestioneIscrizioni.getId().esisteIdGita(id)) {
+            return "ERRORE: Esiste già una gita con ID " + id + ".";
+        }
+        // Verifica anche nel file (la gita potrebbe esistere senza iscrizioni)
+        for (Gita g : caricaTutteLeGite()) {
             if (g.getId() == id) {
                 return "ERRORE: Esiste già una gita con ID " + id + ".";
             }
         }
 
         boolean ok = gestioneGite.inserisciGita(id, localita, durata);
-        if (ok) {
-            return "OK: Gita aggiunta con successo!";
-        } else {
-            return "ERRORE: Impossibile salvare la gita sul file.";
-        }
+        return ok ? "OK: Gita aggiunta con successo!" : "ERRORE: Impossibile salvare la gita sul file.";
     }
 
     /**
      * Rimuove una gita dal file .pdm.
      * @return messaggio di esito
      */
+    /**
+     * Rimuove una gita e, per ogni studente iscritto:
+     * - rimuove la sua iscrizione a questa gita
+     * - se lo studente non è iscritto ad altre gite, lo elimina anche dal file studenti
+     *
+     * @return messaggio di esito
+     */
     public String rimuoviGita(int idGita) {
-        boolean ok = gestioneGite.rimuoviGita(idGita);
-        if (ok) {
-            return "OK: Gita rimossa con successo.";
-        } else {
-            return "ERRORE: Gita non trovata o impossibile rimuoverla.";
+        // 1. Recupera le matricole degli studenti iscritti a questa gita
+        HashSet<Integer> matricoleIscritte = gestioneIscrizioni.getStudentiPerGita(idGita);
+
+        // 2. Per ogni studente iscritto a questa gita
+        for (int matricola : matricoleIscritte) {
+            // Rimuove l'iscrizione studente-gita dal file iscrizioni.txt
+            gestioneIscrizioni.rimuoviIscrizione(matricola, idGita);
+
+            // Controlla se lo studente è ancora iscritto ad altre gite
+            HashSet<Integer> altreGite = gestioneIscrizioni.getGitePerStudente(matricola);
+            if (altreGite.isEmpty()) {
+                // Lo studente non appartiene più a nessuna gita: rimuovilo dal file studenti
+                gestioneStudenti.rimuoviStudente(matricola);
+            }
         }
+
+        // 3. Rimuove la gita dal file elencoGite.pdm
+        boolean ok = gestioneGite.rimuoviGita(idGita);
+        return ok ? "OK: Gita rimossa con successo." : "ERRORE: Gita non trovata o impossibile rimuoverla.";
     }
 
     /**
-     * Carica tutte le gite dal file e le restituisce come lista.
+     * Carica tutte le gite — delega a GestioneFileGita (no duplicazione).
      */
     public ArrayList<Gita> caricaTutteLeGite() {
-        ArrayList<Gita> lista = new ArrayList<>();
-        File file = new File(FILE_GITE);
-        if (!file.exists()) return lista;
-
-        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-            long nRecord = raf.length() / DIM_RECORD_GITA;
-            for (int i = 0; i < nRecord; i++) {
-                raf.seek((long) i * DIM_RECORD_GITA);
-                int id = raf.readInt();
-                String localita = controlli.leggiStringaDalFile(raf);
-                int durata = raf.readInt();
-                lista.add(new Gita(id, localita, durata));
-            }
-        } catch (IOException e) {
-            System.out.println("Errore lettura gite: " + e.getMessage());
-        }
-        return lista;
+        return gestioneGite.caricaTutteLeGite();
     }
 
     /**
@@ -146,17 +139,21 @@ public class LogicaGita {
         int matricola = Integer.parseInt(matricolaStr);
         int anno = Integer.parseInt(annoStr);
 
-        // Controlla se la matricola esiste già
-        ArrayList<Studente> studenti = caricaTuttiGliStudenti();
-        for (Studente s : studenti) {
+        // Controlla duplicato matricola usando l'HashSet in memoria (O(1) invece di O(n))
+        if (gestioneIscrizioni.getId().esisteIdStudente(matricola)) {
+            boolean iscOk = gestioneIscrizioni.aggiungiIscrizione(matricola, idGita);
+            return iscOk
+                ? "OK: Studente già presente, iscritto alla gita con successo!"
+                : "ERRORE: Lo studente è già iscritto a questa gita.";
+        }
+
+        // Studente non ancora in memoria: verifica anche nel file studenti
+        for (Studente s : caricaTuttiGliStudenti()) {
             if (s.getMatricola() == matricola) {
-                // Studente già esiste: aggiungi solo l'iscrizione
                 boolean iscOk = gestioneIscrizioni.aggiungiIscrizione(matricola, idGita);
-                if (iscOk) {
-                    return "OK: Studente già presente, iscritto alla gita con successo!";
-                } else {
-                    return "ERRORE: Lo studente è già iscritto a questa gita.";
-                }
+                return iscOk
+                    ? "OK: Studente già presente, iscritto alla gita con successo!"
+                    : "ERRORE: Lo studente è già iscritto a questa gita.";
             }
         }
 
@@ -167,11 +164,9 @@ public class LogicaGita {
         }
 
         boolean iscOk = gestioneIscrizioni.aggiungiIscrizione(matricola, idGita);
-        if (iscOk) {
-            return "OK: Studente aggiunto e iscritto alla gita con successo!";
-        } else {
-            return "ERRORE: Studente salvato ma impossibile iscriverlo alla gita.";
-        }
+        return iscOk
+            ? "OK: Studente aggiunto e iscritto alla gita con successo!"
+            : "ERRORE: Studente salvato ma impossibile iscriverlo alla gita.";
     }
 
     /**
@@ -180,35 +175,14 @@ public class LogicaGita {
      */
     public String rimuoviStudenteDaGita(int matricola, int idGita) {
         boolean ok = gestioneIscrizioni.rimuoviIscrizione(matricola, idGita);
-        if (ok) {
-            return "OK: Studente rimosso dalla gita con successo.";
-        } else {
-            return "ERRORE: Iscrizione non trovata o impossibile rimuoverla.";
-        }
+        return ok ? "OK: Studente rimosso dalla gita con successo." : "ERRORE: Iscrizione non trovata o impossibile rimuoverla.";
     }
 
     /**
-     * Carica tutti gli studenti dal file .pdm
+     * Carica tutti gli studenti — delega a GestioneFileStudenti (no duplicazione).
      */
     public ArrayList<Studente> caricaTuttiGliStudenti() {
-        ArrayList<Studente> lista = new ArrayList<>();
-        File file = new File(FILE_STUDENTI);
-        if (!file.exists()) return lista;
-
-        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-            long nRecord = raf.length() / DIM_RECORD_STUDENTE;
-            for (int i = 0; i < nRecord; i++) {
-                raf.seek((long) i * DIM_RECORD_STUDENTE);
-                int matricola = raf.readInt();
-                String nome = controlli.leggiStringaDalFile(raf);
-                String cognome = controlli.leggiStringaDalFile(raf);
-                int anno = raf.readInt();
-                lista.add(new Studente(nome, cognome, matricola, anno));
-            }
-        } catch (IOException e) {
-            System.out.println("Errore lettura studenti: " + e.getMessage());
-        }
-        return lista;
+        return gestioneStudenti.caricaTuttiGliStudenti();
     }
 
     /**
@@ -218,9 +192,8 @@ public class LogicaGita {
     public ArrayList<Studente> getStudentiPerGita(int idGita) {
         ArrayList<Studente> risultato = new ArrayList<>();
         HashSet<Integer> matricoleIscritte = gestioneIscrizioni.getStudentiPerGita(idGita);
-        ArrayList<Studente> tuttiStudenti = caricaTuttiGliStudenti();
 
-        for (Studente s : tuttiStudenti) {
+        for (Studente s : caricaTuttiGliStudenti()) {
             if (matricoleIscritte.contains(s.getMatricola())) {
                 risultato.add(s);
             }
