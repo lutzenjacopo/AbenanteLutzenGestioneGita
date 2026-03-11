@@ -8,7 +8,7 @@ package abenantelutzengestionegara;
  *
  * @author lutzen.jacopo
  */
-public class AbenanteLutzenGestioneGara {
+public class AbenanteLutzenGestioneGita {
 
     /**
      * @param args the command line arguments

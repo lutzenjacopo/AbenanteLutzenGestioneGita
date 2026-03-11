@@ -56,6 +56,84 @@ public class GestioneFile {
         return ok;
     }
 
+    /**
+     * Rimuove dal file TU TTE le righe che riguardano una certa gita (es. quando si elimina la gita).
+     * Fa UNA SOLA riscrittura del file invece di una per ogni studente.
+     * Aggiorna anche la memoria (Id).
+     *
+     * @param idGita la gita da rimuovere completamente dalle iscrizioni
+     * @return numero di righe rimosse
+     */
+    public int rimuoviTutteIscrizioniGita(int idGita) {
+        ArrayList<String> righe = leggiTutteLeRighe();
+        ArrayList<String> righeRimaste = new ArrayList<>();
+        int rimossi = 0;
+
+        for (String riga : righe) {
+            String[] parti = riga.split(",");
+            if (parti.length == 2 && parti[1].trim().equals(String.valueOf(idGita))) {
+                // Questa riga appartiene alla gita da eliminare: la scartiamo
+                int matricola = Integer.parseInt(parti[0].trim());
+                id.rimuoviIscrizione(matricola, idGita);
+                rimossi++;
+            } else {
+                righeRimaste.add(riga);
+            }
+        }
+
+        // Riscrive il file UNA SOLA VOLTA con le righe rimaste
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_ISCRIZIONI, false))) {
+            for (String riga : righeRimaste) {
+                bw.write(riga);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Errore riscrittura file: " + e.getMessage());
+        }
+
+        System.out.println("Rimosse " + rimossi + " iscrizioni per la gita " + idGita);
+        return rimossi;
+    }
+
+    /**
+     * Rimuove dal file TUTTE le righe che riguardano uno studente (es. quando si elimina lo studente).
+     * Fa UNA SOLA riscrittura del file.
+     * Aggiorna anche la memoria (Id).
+     *
+     * @param matricola lo studente da rimuovere completamente dalle iscrizioni
+     * @return numero di righe rimosse
+     */
+    public int rimuoviTutteIscrizioniStudente(int matricola) {
+        ArrayList<String> righe = leggiTutteLeRighe();
+        ArrayList<String> righeRimaste = new ArrayList<>();
+        int rimossi = 0;
+
+        for (String riga : righe) {
+            String[] parti = riga.split(",");
+            if (parti.length == 2 && parti[0].trim().equals(String.valueOf(matricola))) {
+                // Questa riga appartiene allo studente da eliminare: la scartiamo
+                int idGita = Integer.parseInt(parti[1].trim());
+                id.rimuoviIscrizione(matricola, idGita);
+                rimossi++;
+            } else {
+                righeRimaste.add(riga);
+            }
+        }
+
+        // Riscrive il file UNA SOLA VOLTA con le righe rimaste
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_ISCRIZIONI, false))) {
+            for (String riga : righeRimaste) {
+                bw.write(riga);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Errore riscrittura file: " + e.getMessage());
+        }
+
+        System.out.println("Rimosse " + rimossi + " iscrizioni per lo studente " + matricola);
+        return rimossi;
+    }
+
     // ── LETTURA ───────────────────────────────────────────────
 
     /**

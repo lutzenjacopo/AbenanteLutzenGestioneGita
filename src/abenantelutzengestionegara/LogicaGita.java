@@ -8,6 +8,11 @@ import java.util.HashSet;
  * Le GUI chiamano solo i metodi di questa classe.
  * Nessun riferimento a componenti grafici qui dentro.
  *
+ * MIGLIORAMENTI rispetto alla versione precedente:
+ * - caricaTutteLeGite() e caricaTuttiGliStudenti() delegate alle rispettive classi file
+ *   (eliminata duplicazione di codice)
+ * - controllo duplicato matricola usa l'HashSet in memoria tramite GestioneFile
+ *   invece di scorrere tutto il file ogni volta
  */
 public class LogicaGita {
 
@@ -16,10 +21,8 @@ public class LogicaGita {
     private GestioneFile gestioneIscrizioni = new GestioneFile();
     private Controlli controlli = new Controlli();
 
-    // ── INIZIALIZZAZIONE ─────────────────────────────────────
-
     /**
-     * Da chiamare all'avvio: crea i file se non esistono e carica le iscrizioni.
+     * richiamare all'avvio: crea i file se non esistono e carica le iscrizioni.
      */
     public void inizializza() {
         gestioneGite.creaFileGita();
@@ -27,7 +30,6 @@ public class LogicaGita {
         gestioneIscrizioni.inizializza();
     }
 
-    // ── GITE ─────────────────────────────────────────────────
 
     /**
      * Aggiunge una gita dopo aver validato i dati.
@@ -70,30 +72,31 @@ public class LogicaGita {
      * @return messaggio di esito
      */
     /**
-     * Rimuove una gita e, per ogni studente iscritto:
+     * Rimuove una gita, per ogni studente iscritto:
      * - rimuove la sua iscrizione a questa gita
      * - se lo studente non è iscritto ad altre gite, lo elimina anche dal file studenti
      *
      * @return messaggio di esito
      */
     public String rimuoviGita(int idGita) {
-        // 1. Recupera le matricole degli studenti iscritti a questa gita
-        HashSet<Integer> matricoleIscritte = gestioneIscrizioni.getStudentiPerGita(idGita);
+        // Copia le matricole prima di toccare il file 
+        ArrayList<Integer> matricoleDaProcessare = new ArrayList<>(
+            gestioneIscrizioni.getStudentiPerGita(idGita)
+        );
 
-        // 2. Per ogni studente iscritto a questa gita
-        for (int matricola : matricoleIscritte) {
-            // Rimuove l'iscrizione studente-gita dal file iscrizioni.txt
-            gestioneIscrizioni.rimuoviIscrizione(matricola, idGita);
+        // Rimuove in una volta sola tutte le righe "*,idGita" da iscrizioni.txt
+        //    e aggiorna la memoria (Id). Evita che il file scriva due volte.
+        gestioneIscrizioni.rimuoviTutteIscrizioniGita(idGita);
 
-            // Controlla se lo studente è ancora iscritto ad altre gite
+        // 3. Per ogni studente che era iscritto: se non ha più altre gite, elimina anche il suo record
+        for (int matricola : matricoleDaProcessare) {
             HashSet<Integer> altreGite = gestioneIscrizioni.getGitePerStudente(matricola);
             if (altreGite.isEmpty()) {
-                // Lo studente non appartiene più a nessuna gita: rimuovilo dal file studenti
                 gestioneStudenti.rimuoviStudente(matricola);
             }
         }
 
-        // 3. Rimuove la gita dal file elencoGite.pdm
+        // Rimuove la gita da elencoGite.pdm
         boolean ok = gestioneGite.rimuoviGita(idGita);
         return ok ? "OK: Gita rimossa con successo." : "ERRORE: Gita non trovata o impossibile rimuoverla.";
     }
@@ -111,8 +114,6 @@ public class LogicaGita {
     public boolean esistonoGite() {
         return !caricaTutteLeGite().isEmpty();
     }
-
-    // ── STUDENTI ─────────────────────────────────────────────
 
     /**
      * Aggiunge uno studente e lo iscrive alla gita selezionata.
@@ -139,7 +140,7 @@ public class LogicaGita {
         int matricola = Integer.parseInt(matricolaStr);
         int anno = Integer.parseInt(annoStr);
 
-        // Controlla duplicato matricola usando l'HashSet in memoria (O(1) invece di O(n))
+        // Controlla duplicato matricola usando l'HashSet in memoria 
         if (gestioneIscrizioni.getId().esisteIdStudente(matricola)) {
             boolean iscOk = gestioneIscrizioni.aggiungiIscrizione(matricola, idGita);
             return iscOk
@@ -174,12 +175,23 @@ public class LogicaGita {
      * @return messaggio di esito
      */
     public String rimuoviStudenteDaGita(int matricola, int idGita) {
+        // Rimuove l'iscrizione specifica dal file iscrizioni.txt e dalla memoria
         boolean ok = gestioneIscrizioni.rimuoviIscrizione(matricola, idGita);
-        return ok ? "OK: Studente rimosso dalla gita con successo." : "ERRORE: Iscrizione non trovata o impossibile rimuoverla.";
+        if (!ok) {
+            return "ERRORE: Iscrizione non trovata o impossibile rimuoverla.";
+        }
+
+        // Se lo studente non è più iscritto ad altre gite, elimina anche il suo record
+        HashSet<Integer> altreGite = gestioneIscrizioni.getGitePerStudente(matricola);
+        if (altreGite.isEmpty()) {
+            gestioneStudenti.rimuoviStudente(matricola);
+        }
+
+        return "OK: Studente rimosso dalla gita con successo.";
     }
 
     /**
-     * Carica tutti gli studenti — delega a GestioneFileStudenti (no duplicazione).
+     * Carica tutti gli studenti lo fa GestioneFileStudenti (no duplicazione).
      */
     public ArrayList<Studente> caricaTuttiGliStudenti() {
         return gestioneStudenti.caricaTuttiGliStudenti();

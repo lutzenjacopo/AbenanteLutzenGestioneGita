@@ -7,9 +7,6 @@ import javax.swing.table.DefaultTableModel;
 /**
  * Finestra principale di gestione gite.
  * La GUI richiama solo metodi di LogicaGita — nessuna logica qui.
- *
- * MIGLIORAMENTO: rimossi i campi gF, gG, gS che erano istanziati
- * ma mai usati (codice morto) — LogicaGita gestisce tutto.
  */
 public class GestioneGitaGUI extends javax.swing.JFrame {
 
@@ -75,49 +72,74 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(204, 153, 255));
         jPanel2.setLayout(null);
 
-        btn_RimuoviGita.setFont(new java.awt.Font("MV Boli", 0, 18));
+        btn_RimuoviGita.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         btn_RimuoviGita.setText("Rimuovi Gita");
-        btn_RimuoviGita.addActionListener(evt -> btn_RimuoviGitaActionPerformed(evt));
+        btn_RimuoviGita.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RimuoviGitaActionPerformed(evt);
+            }
+        });
         jPanel2.add(btn_RimuoviGita);
         btn_RimuoviGita.setBounds(10, 150, 160, 60);
 
-        lbl_GestioneGita.setFont(new java.awt.Font("MV Boli", 0, 24));
+        lbl_GestioneGita.setFont(new java.awt.Font("MV Boli", 0, 24)); // NOI18N
         lbl_GestioneGita.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbl_GestioneGita.setText("Gite");
         jPanel2.add(lbl_GestioneGita);
         lbl_GestioneGita.setBounds(10, 220, 330, 40);
+        lbl_GestioneGita.getAccessibleContext().setAccessibleDescription("");
 
-        btn_RimuoviStudente.setFont(new java.awt.Font("MV Boli", 0, 14));
+        btn_RimuoviStudente.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
         btn_RimuoviStudente.setText("Rimuovi Studente");
-        btn_RimuoviStudente.addActionListener(evt -> btn_RimuoviStudenteActionPerformed(evt));
+        btn_RimuoviStudente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RimuoviStudenteActionPerformed(evt);
+            }
+        });
         jPanel2.add(btn_RimuoviStudente);
         btn_RimuoviStudente.setBounds(180, 150, 160, 60);
 
-        btn_AggiungiGita.setFont(new java.awt.Font("MV Boli", 0, 18));
+        btn_AggiungiGita.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         btn_AggiungiGita.setText("Aggiungi Gita");
-        btn_AggiungiGita.addActionListener(evt -> btn_AggiungiGitaActionPerformed(evt));
+        btn_AggiungiGita.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_AggiungiGitaActionPerformed(evt);
+            }
+        });
         jPanel2.add(btn_AggiungiGita);
         btn_AggiungiGita.setBounds(10, 80, 160, 60);
 
-        btn_AggiungiStudente.setFont(new java.awt.Font("MV Boli", 0, 14));
+        btn_AggiungiStudente.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
         btn_AggiungiStudente.setText("Aggiungi Studente");
-        btn_AggiungiStudente.addActionListener(evt -> btn_AggiungiStudenteActionPerformed(evt));
+        btn_AggiungiStudente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_AggiungiStudenteActionPerformed(evt);
+            }
+        });
         jPanel2.add(btn_AggiungiStudente);
         btn_AggiungiStudente.setBounds(180, 80, 160, 60);
 
-        cbxGite.setFont(new java.awt.Font("MV Boli", 0, 14));
+        cbxGite.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
+        cbxGite.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jPanel2.add(cbxGite);
         cbxGite.setBounds(10, 270, 330, 30);
 
-        lbl_GestioneGita1.setFont(new java.awt.Font("MV Boli", 0, 24));
+        lbl_GestioneGita1.setFont(new java.awt.Font("MV Boli", 0, 24)); // NOI18N
         lbl_GestioneGita1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbl_GestioneGita1.setText("Gestione Gita");
         jPanel2.add(lbl_GestioneGita1);
         lbl_GestioneGita1.setBounds(10, 10, 330, 40);
 
         JtblStudenti.setModel(new javax.swing.table.DefaultTableModel(
-            new Object[][] {{null, null, null, null}},
-            new String[]{"Matricola", "Nome", "Cognome", "Anno"}
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Matricola", "Nome", "Cognome", "Anno"
+            }
         ));
         jScrollPane1.setViewportView(JtblStudenti);
 
