@@ -14,12 +14,11 @@ public class AbenanteLutzenGestioneGara {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        GestioneGitaGUI g = new GestioneGitaGUI();
-        g.setVisible(true);
-        
-        GestioneFileStudenti gfs = new GestioneFileStudenti();
-        gfs.creaFileStudente();
+         java.awt.EventQueue.invokeLater(() -> {
+            GestioneGitaGUI g = new GestioneGitaGUI();
+            g.setVisible(true);
+        });
+    }
     }
     
-}
+

@@ -1,5 +1,7 @@
 package abenantelutzengestionegara;
-
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.table.DefaultTableModel;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -8,18 +10,54 @@ package abenantelutzengestionegara;
 /**
  *
  * @author samue
+ * Finestra principale di gestione gite.
+ * La GUI richiama solo metodi di LogicaGita — nessuna logica qui.
  */
 public class GestioneGitaGUI extends javax.swing.JFrame {
     private GestioneFile gF = new GestioneFile();
     private    GestioneFileGita gG = new GestioneFileGita();
     private   GestioneFileStudenti gS = new GestioneFileStudenti();
-
+	private LogicaGita l = new LogicaGita();
     /**
      * Creates new form GestioneGitaGUI
      */
     public GestioneGitaGUI() {
         initComponents();
+		l.inizializza();
+        aggiornaComboGite();
+        // Aggiorna la tabella quando cambia la selezione della combobox
+        cbxGite.addActionListener(e -> aggiornaTabella());
         
+    }
+	
+	/**
+     * Ricarica la JComboBox con tutte le gite dal file.
+     */
+    public void aggiornaComboGite() {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (String voce : l.getVociComboGite()) {
+            model.addElement(voce);
+        }
+        cbxGite.setModel(model);
+        aggiornaTabella();
+    }
+
+    /**
+     * Aggiorna la JTable mostrando gli studenti della gita selezionata.
+     */
+    public void aggiornaTabella() {
+        DefaultTableModel model = (DefaultTableModel) JtblStudenti.getModel();
+        model.setRowCount(0); // svuota
+
+        if (cbxGite.getSelectedItem() == null) return;
+
+        int idGita = l.estraiIdDaVoceCombo(cbxGite.getSelectedItem().toString());
+        if (idGita == -1) return;
+
+        ArrayList<Studente> studenti = l.getStudentiPerGita(idGita);
+        for (Studente s : studenti) {
+            model.addRow(new Object[]{s.getMatricola(), s.getNome(), s.getCognome(), s.getAnno()});
+        }
     }
 
     /**
@@ -38,7 +76,7 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
         btn_RimuoviStudente = new javax.swing.JButton();
         btn_AggiungiGita = new javax.swing.JButton();
         btn_AggiungiStudente = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxGite = new javax.swing.JComboBox<>();
         lbl_GestioneGita1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         JtblStudenti = new javax.swing.JTable();
@@ -97,10 +135,10 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
         jPanel2.add(btn_AggiungiStudente);
         btn_AggiungiStudente.setBounds(180, 80, 160, 60);
 
-        jComboBox1.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel2.add(jComboBox1);
-        jComboBox1.setBounds(10, 270, 330, 30);
+        cbxGite.setFont(new java.awt.Font("MV Boli", 0, 14)); // NOI18N
+        cbxGite.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel2.add(cbxGite);
+        cbxGite.setBounds(10, 270, 330, 30);
 
         lbl_GestioneGita1.setFont(new java.awt.Font("MV Boli", 0, 24)); // NOI18N
         lbl_GestioneGita1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -162,93 +200,63 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_RimuoviGitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RimuoviGitaActionPerformed
-       // 1. Controlla che ci sia effettivamente qualcosa di selezionato nella tendina
-    if (jComboBox1.getSelectedItem() != null) {
-        
-        // 2. Recupera l'elemento selezionato (es. "1 - Roma")
-        String gitaSelezionata = jComboBox1.getSelectedItem().toString();
-        
-        try {
-            // 3. Estrai l'ID (prende tutto ciò che c'è prima del trattino)
-            String[] parti = gitaSelezionata.split("-");
-            int idGita = Integer.parseInt(parti[0].trim());
-            
-            // 5. Rimuovi fisicamente dal file .pdm
-            boolean rimossoDalFile = gG.rimuoviGita(idGita);
-            
-            if (rimossoDalFile) {
-                // 6. Rimuovi l'elemento dall'interfaccia grafica (dalla tendina)
-                jComboBox1.removeItem(jComboBox1.getSelectedItem());
-                javax.swing.JOptionPane.showMessageDialog(this, "Gita rimossa con successo!");
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Errore: Gita non trovata nel file o impossibile rimuoverla.");
-            }
-            
-        } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Errore nel formato dell'ID gita. Impossibile capire quale eliminare.");
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Errore imprevisto: " + e.getMessage());
+        if (cbxGite.getSelectedItem() == null) {
+            mostraMessaggio("Nessuna gita selezionata.");
+            return;
         }
-        
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Nessuna gita selezionata. Apri il menu a tendina e scegline una.");
-    }
+        int idGita = l.estraiIdDaVoceCombo(cbxGite.getSelectedItem().toString());
+        String esito = l.rimuoviGita(idGita);
+        mostraMessaggio(esito.replace("OK: ", "").replace("ERRORE: ", ""));
+
+        if (esito.startsWith("OK")) {
+            aggiornaComboGite();
+        }
     }//GEN-LAST:event_btn_RimuoviGitaActionPerformed
 
     private void btn_RimuoviStudenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RimuoviStudenteActionPerformed
-         // 1. Ottieni la riga selezionata nella tabella
-    int rigaSelezionata = JtblStudenti.getSelectedRow();
-
-    if (rigaSelezionata != -1) {
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) JtblStudenti.getModel();
-
-        try {
-            // 2. Recupera la Matricola dalla tabella
-            int matricola = Integer.parseInt(model.getValueAt(rigaSelezionata, 0).toString());
-
-            // 3. Recupera l'ID della Gita dalla JComboBox
-            // (Assicurati di aver selezionato qualcosa nella tendina)
-            if (jComboBox1.getSelectedItem() == null) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Seleziona prima una gita dal menu a tendina.");
-                return; // Ferma l'esecuzione se non c'è una gita selezionata
-            }
-            
-            String selezioneCombo = jComboBox1.getSelectedItem().toString();
-            // Adatta questa riga in base a come è scritta la tua combobox (Scenario 1 o 2)
-            String[] parti = selezioneCombo.split("-"); 
-            int idGita = Integer.parseInt(parti[0].trim());
-
-            // 4. Usa GestioneFile per rimuovere l'iscrizione
-            boolean rimossoDaFile = gF.rimuoviIscrizione(matricola, idGita);
-
-            if (rimossoDaFile) {
-                // 5. Rimuovi dalla tabella grafica
-                model.removeRow(rigaSelezionata);
-                javax.swing.JOptionPane.showMessageDialog(this, "Studente rimosso dalla gita con successo.");
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Impossibile rimuovere lo studente dal file delle iscrizioni.");
-            }
-
-        } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Errore: ID gita o matricola non validi.");
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Si è verificato un errore: " + e.getMessage());
+         
+        int rigaSelezionata = JtblStudenti.getSelectedRow();
+        if (rigaSelezionata == -1) {
+            mostraMessaggio("Seleziona uno studente dalla tabella.");
+            return;
+        }
+        if (cbxGite.getSelectedItem() == null) {
+            mostraMessaggio("Seleziona prima una gita.");
+            return;
         }
 
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Seleziona uno studente dalla tabella per rimuoverlo.");
-    }
+        int matricola = Integer.parseInt(
+            JtblStudenti.getValueAt(rigaSelezionata, 0).toString()
+        );
+        int idGita = l.estraiIdDaVoceCombo(cbxGite.getSelectedItem().toString());
+
+        String esito = l.rimuoviStudenteDaGita(matricola, idGita);
+        mostraMessaggio(esito.replace("OK: ", "").replace("ERRORE: ", ""));
+
+        if (esito.startsWith("OK")) {
+            aggiornaTabella();
+        }
     }//GEN-LAST:event_btn_RimuoviStudenteActionPerformed
 
     private void btn_AggiungiGitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AggiungiGitaActionPerformed
-       AggiungiGitaGUI g = new AggiungiGitaGUI();
+       AggiungiGitaGUI g = new AggiungiGitaGUI(l,this);
        g.setVisible(true);
     }//GEN-LAST:event_btn_AggiungiGitaActionPerformed
 
     private void btn_AggiungiStudenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AggiungiStudenteActionPerformed
-       AggiungiStudenteGUI s = new AggiungiStudenteGUI();
-       s.setVisible(true);
+      if (!l.esistonoGite()) {
+            mostraMessaggio("Non ci sono gite disponibili. Aggiungi prima una gita.");
+            return;
+        }
+        AggiungiStudenteGUI s = new AggiungiStudenteGUI(l, this);
+        s.setVisible(true);
     }//GEN-LAST:event_btn_AggiungiStudenteActionPerformed
+
+
+private void mostraMessaggio(String msg) {
+        javax.swing.JOptionPane.showMessageDialog(this, msg);
+    }
+
 
     /**
      * @param args the command line arguments
@@ -291,7 +299,7 @@ public class GestioneGitaGUI extends javax.swing.JFrame {
     private javax.swing.JButton btn_AggiungiStudente;
     private javax.swing.JButton btn_RimuoviGita;
     private javax.swing.JButton btn_RimuoviStudente;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbxGite;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

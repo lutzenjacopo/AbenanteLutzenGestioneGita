@@ -11,13 +11,17 @@ package abenantelutzengestionegara;
 public class AggiungiGitaGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AggiungiGitaGUI.class.getName());
-
+private LogicaGita l;
+    private GestioneGitaGUI finestraPrincipale;
     /**
      * Creates new form AggiungiGaraGUI
      */
-    public AggiungiGitaGUI() {
+    public AggiungiGitaGUI(LogicaGita l, GestioneGitaGUI finestraPrincipale) {
+        this.l = l;
+        this.finestraPrincipale = finestraPrincipale;
         initComponents();
-        Controlli c = new Controlli();
+       
+       
     }
 
     /**
@@ -105,6 +109,11 @@ public class AggiungiGitaGUI extends javax.swing.JFrame {
         btnAggiungi.setBackground(new java.awt.Color(236, 119, 16));
         btnAggiungi.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
         btnAggiungi.setText("Aggiungi");
+        btnAggiungi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAggiungiActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnAggiungi);
         btnAggiungi.setBounds(160, 340, 120, 70);
 
@@ -131,30 +140,28 @@ public class AggiungiGitaGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIDActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnAggiungiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAggiungiActionPerformed
+      // La GUI legge i campi e passa i valori grezzi alla logica
+        String esito = l.aggiungiGita(
+            txtID.getText().trim(),
+            txtLocalita.getText().trim(),
+            txtDurata.getText().trim()
+        );
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new AggiungiGitaGUI().setVisible(true));
-    }
+        javax.swing.JOptionPane.showMessageDialog(this,
+            esito.replace("OK: ", "").replace("ERRORE: ", ""));
+
+        if (esito.startsWith("OK")) {
+            // Aggiorna la combobox e la tabella nella finestra principale
+            finestraPrincipale.aggiornaComboGite();
+            // Pulisce i campi per un eventuale nuovo inserimento
+            txtID.setText("");
+            txtLocalita.setText("");
+            txtDurata.setText("");
+        } 
+	  
+	  
+    }//GEN-LAST:event_btnAggiungiActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAggiungi;

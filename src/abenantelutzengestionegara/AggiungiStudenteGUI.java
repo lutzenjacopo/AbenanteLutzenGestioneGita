@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package abenantelutzengestionegara;
-
+import javax.swing.DefaultComboBoxModel;
 /**
  *
  * @author abenante.lucia
@@ -11,14 +11,30 @@ package abenantelutzengestionegara;
 public class AggiungiStudenteGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AggiungiStudenteGUI.class.getName());
-
+private LogicaGita l;
+    private GestioneGitaGUI finestraPrincipale;
     /**
      * Creates new form AggiungiStudenteGUI
      */
-    public AggiungiStudenteGUI() {
-        initComponents();
+    public AggiungiStudenteGUI(LogicaGita l, GestioneGitaGUI finestraPrincipale) {
+        this.l = l;
+        this.finestraPrincipale = finestraPrincipale;
+		initComponents();
         Controlli c = new Controlli();
+		  caricaComboGite();
     }
+//metodi
+/**
+     * Popola la combobox con le gite lette dal file tramite LogicaGita.
+     */
+    private void caricaComboGite() {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (String voce : l.getVociComboGite()) {
+            model.addElement(voce);
+        }
+        cbxGita.setModel(model);
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -41,6 +57,8 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
         txtCognome = new javax.swing.JTextField();
         txtMatricola = new javax.swing.JTextField();
         txtAnno = new javax.swing.JTextField();
+        lblIdGita = new javax.swing.JLabel();
+        cbxGita = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,7 +74,7 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnAggiungi);
-        btnAggiungi.setBounds(130, 350, 120, 50);
+        btnAggiungi.setBounds(150, 410, 120, 50);
 
         lblTitolo.setFont(new java.awt.Font("MV Boli", 0, 24)); // NOI18N
         lblTitolo.setText("Crea uno Studente");
@@ -92,9 +110,9 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
             }
         });
         jPanel2.add(txtNome);
-        txtNome.setBounds(210, 20, 140, 22);
+        txtNome.setBounds(250, 20, 140, 22);
         jPanel2.add(txtCognome);
-        txtCognome.setBounds(210, 80, 140, 22);
+        txtCognome.setBounds(250, 80, 140, 22);
 
         txtMatricola.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,7 +120,7 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
             }
         });
         jPanel2.add(txtMatricola);
-        txtMatricola.setBounds(210, 140, 140, 22);
+        txtMatricola.setBounds(250, 140, 140, 22);
 
         txtAnno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,10 +128,19 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
             }
         });
         jPanel2.add(txtAnno);
-        txtAnno.setBounds(209, 200, 140, 22);
+        txtAnno.setBounds(250, 200, 140, 22);
+
+        lblIdGita.setFont(new java.awt.Font("MV Boli", 0, 18)); // NOI18N
+        lblIdGita.setText("Id Gita");
+        jPanel2.add(lblIdGita);
+        lblIdGita.setBounds(40, 250, 70, 30);
+
+        cbxGita.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel2.add(cbxGita);
+        cbxGita.setBounds(250, 260, 140, 22);
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 80, 400, 250);
+        jPanel2.setBounds(0, 80, 440, 310);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -121,14 +148,14 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -148,40 +175,44 @@ public class AggiungiStudenteGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_txtAnnoActionPerformed
 
     private void btnAggiungiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAggiungiActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAggiungiActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+     if (cbxGita.getSelectedItem() == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Nessuna gita disponibile.");
+            return;
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new AggiungiStudenteGUI().setVisible(true));
-    }
+        int idGita = l.estraiIdDaVoceCombo(cbxGita.getSelectedItem().toString());
+
+        // La GUI legge i campi e passa tutto alla logica
+        String esito = l.aggiungiStudente(
+            txtNome.getText().trim(),
+            txtCognome.getText().trim(),
+            txtMatricola.getText().trim(),
+            txtAnno.getText().trim(),
+            idGita
+        );
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+            esito.replace("OK: ", "").replace("ERRORE: ", ""));
+
+        if (esito.startsWith("OK")) {
+            // Aggiorna la tabella nella finestra principale se la gita selezionata coincide
+            finestraPrincipale.aggiornaTabella();
+            // Pulisce i campi
+            txtNome.setText("");
+            txtCognome.setText("");
+            txtMatricola.setText("");
+            txtAnno.setText("");
+        }
+    }//GEN-LAST:event_btnAggiungiActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAggiungi;
+    private javax.swing.JComboBox<String> cbxGita;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblAnno;
     private javax.swing.JLabel lblCognome;
+    private javax.swing.JLabel lblIdGita;
     private javax.swing.JLabel lblMatricola;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblTitolo;
